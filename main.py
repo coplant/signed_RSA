@@ -1,9 +1,7 @@
 import pickle
-import random
 from rsa_cipher import RSA
-from sha_hash import sha, chunk
+from sha_hash import sha
 from PySide6.QtWidgets import *
-from PySide6.QtCore import *
 from ui_mainwindow import Ui_MainWindow
 
 
@@ -138,7 +136,7 @@ class GUI(QMainWindow):
             QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
 
     def save_sign(self):
-        file_name = QFileDialog.getSaveFileName(self, "Save File", ".", "All Files (*)")
+        file_name = QFileDialog.getSaveFileName(self, "Save Sign", ".", "All Files (*)")
         if file_name[0]:
             with open(file_name[0], "wb") as file:
                 pickle.dump((self.ui.from_sign.text(), self.ui.text.toPlainText()), file)
@@ -146,7 +144,7 @@ class GUI(QMainWindow):
             QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
 
     def load_sign(self):
-        file_name = QFileDialog.getOpenFileName(self, "Open File", ".", "All Files (*)")
+        file_name = QFileDialog.getOpenFileName(self, "Open Sign", ".", "All Files (*)")
         if file_name[0]:
             with open(file_name[0], "rb") as file:
                 sign, message = pickle.load(file)
@@ -154,6 +152,7 @@ class GUI(QMainWindow):
             self.ui.text.setText(message)
         else:
             QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
+
 
 def main():
     app = QApplication()

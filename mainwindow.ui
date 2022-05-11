@@ -123,6 +123,9 @@
           <property name="text">
            <string>Clear</string>
           </property>
+          <property name="shortcut">
+           <string>Ctrl+L</string>
+          </property>
           <property name="flat">
            <bool>false</bool>
           </property>
@@ -361,10 +364,16 @@
    <property name="text">
     <string>Load</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+O</string>
+   </property>
   </action>
   <action name="sign_save">
    <property name="text">
     <string>Save</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
    </property>
   </action>
  </widget>
