@@ -25,8 +25,8 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(852, 503)
-        MainWindow.setMinimumSize(QSize(852, 503))
+        MainWindow.resize(852, 544)
+        MainWindow.setMinimumSize(QSize(852, 544))
         self.open = QAction(MainWindow)
         self.open.setObjectName(u"open")
         self.save = QAction(MainWindow)
@@ -125,7 +125,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.btn_clear)
 
-        self.verticalSpacer_3 = QSpacerItem(20, 37, QSizePolicy.Minimum, QSizePolicy.Maximum)
+        self.verticalSpacer_3 = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Maximum)
 
         self.verticalLayout.addItem(self.verticalSpacer_3)
 
@@ -218,6 +218,18 @@ class Ui_MainWindow(object):
         self.to_hash.setClearButtonEnabled(False)
 
         self.formLayout_3.setWidget(2, QFormLayout.FieldRole, self.to_hash)
+
+        self.label_3 = QLabel(self.centralwidget)
+        self.label_3.setObjectName(u"label_3")
+
+        self.formLayout_3.setWidget(3, QFormLayout.LabelRole, self.label_3)
+
+        self.to_hash_actual = QLineEdit(self.centralwidget)
+        self.to_hash_actual.setObjectName(u"to_hash_actual")
+        self.to_hash_actual.setReadOnly(False)
+        self.to_hash_actual.setClearButtonEnabled(False)
+
+        self.formLayout_3.setWidget(3, QFormLayout.FieldRole, self.to_hash_actual)
 
 
         self.verticalLayout_3.addLayout(self.formLayout_3)
@@ -326,7 +338,8 @@ class Ui_MainWindow(object):
         self.btn_encrypt.setText(QCoreApplication.translate("MainWindow", u"Sign", None))
         self.to_N.setText(QCoreApplication.translate("MainWindow", u"RSA mod N: ", None))
         self.to_private.setText(QCoreApplication.translate("MainWindow", u"Public Key (E): ", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Hash:", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Expected Hash:", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Actual Hash:", None))
         self.btn_decrypt.setText(QCoreApplication.translate("MainWindow", u"Verify", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
         self.menuSign.setTitle(QCoreApplication.translate("MainWindow", u"Sign", None))

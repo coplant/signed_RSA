@@ -85,6 +85,7 @@ class GUI(QMainWindow):
     def verify(self):
         N, public_key = None, None
         self.ui.to_hash.clear()
+        self.ui.to_hash_actual.clear()
         if not self.ui.to_line_N.text():
             if self.ui.main_line_N.text():
                 self.ui.to_line_N.setText(self.ui.main_line_N.text())
@@ -97,6 +98,7 @@ class GUI(QMainWindow):
             public_key = int(self.ui.to_line_public.text())
         text = self.ui.text.toPlainText()
         decoded_hash = sha(text)
+        self.ui.to_hash_actual.setText(decoded_hash)
         from_sign = self.ui.from_sign.text()
         sign = pow(int(from_sign, 16), public_key, N)
         self.ui.to_hash.setText(f"{sign:x}")
@@ -119,6 +121,7 @@ class GUI(QMainWindow):
         self.ui.text.clear()
         self.ui.from_sign.clear()
         self.ui.to_hash.clear()
+        self.ui.to_hash_actual.clear()
         self.to_data = None
         self.from_data = None
 
@@ -139,7 +142,7 @@ class GUI(QMainWindow):
         file_name = QFileDialog.getSaveFileName(self, "Save Sign", ".", "All Files (*)")
         if file_name[0]:
             with open(file_name[0], "wb") as file:
-                pickle.dump((self.ui.from_sign.text(), self.ui.text.toPlainText()), file)
+                pickle.dump((self.ui.from_sign.text(), self.ui.main_line_public.text(), self.ui.main_line_N.text(), self.ui.text.toPlainText()), file)
         else:
             QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
 
@@ -147,9 +150,11 @@ class GUI(QMainWindow):
         file_name = QFileDialog.getOpenFileName(self, "Open Sign", ".", "All Files (*)")
         if file_name[0]:
             with open(file_name[0], "rb") as file:
-                sign, message = pickle.load(file)
+                sign, public_key, N, message = pickle.load(file)
             self.ui.from_sign.setText(sign)
             self.ui.text.setText(message)
+            self.ui.to_line_public.setText(public_key)
+            self.ui.to_line_N.setText(N)
         else:
             QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
 
