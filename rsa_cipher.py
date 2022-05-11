@@ -1,5 +1,6 @@
 import random
 
+
 class RSA:
     @staticmethod
     def encrypt(public_key, n, msg):

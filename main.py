@@ -1,7 +1,7 @@
+import pickle
 import random
-import binascii
 from rsa_cipher import RSA
-from sha_hash import sha
+from sha_hash import sha, chunk
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from ui_mainwindow import Ui_MainWindow
@@ -15,11 +15,12 @@ class GUI(QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
         self.show()
-        self.ui.save.triggered.connect(self.save)
         self.ui.open.triggered.connect(self.open)
+        self.ui.sign_save.triggered.connect(self.save_sign)
+        self.ui.sign_load.triggered.connect(self.load_sign)
         self.ui.btn_main.clicked.connect(lambda: self.generate())
-        self.ui.btn_encrypt.clicked.connect(lambda: self.encrypt())
-        self.ui.btn_decrypt.clicked.connect(lambda: self.decrypt())
+        self.ui.btn_encrypt.clicked.connect(lambda: self.sign())
+        self.ui.btn_decrypt.clicked.connect(lambda: self.verify())
         self.ui.btn_clear.clicked.connect(lambda: self.clear())
 
     def generate(self, length=256):
@@ -57,49 +58,54 @@ class GUI(QMainWindow):
         else:
             public_key = int(self.ui.main_line_public.text())
         self.ui.main_line_N.setText(str(N))
+        if N.bit_length() < 160:
+            QMessageBox.information(self, "Error", f"Bit length of N must be more than 160!\nCurrent length: {N.bit_length()}", QMessageBox.Ok)
+            return
         self.ui.main_line_phi.setText(str(phiN))
         private_key = pow(public_key, -1, phiN)
         self.ui.main_line_private.setText(str(private_key))
 
-    def encrypt(self):
-        N, public_key = None, None
-
+    def sign(self):
+        N, private_key = None, None
         if self.ui.main_line_N.text():
             N = int(self.ui.main_line_N.text())
-        if N < 256:
-            QMessageBox.information(self, "Error", "The alphabe length must be smaller or equal N", QMessageBox.Ok)
-            return
         if not self.ui.from_line_N.text():
             if self.ui.main_line_N.text():
                 self.ui.from_line_N.setText(self.ui.main_line_N.text())
         if self.ui.from_line_N.text():
             N = int(self.ui.from_line_N.text())
+        if not self.ui.from_line_private.text():
+            if self.ui.main_line_private.text():
+                self.ui.from_line_private.setText(self.ui.main_line_private.text())
+        if self.ui.from_line_private.text():
+            private_key = int(self.ui.from_line_private.text())
+        text = self.ui.text.toPlainText()
+        message_hash = sha(text)
+        sign = pow(int(message_hash, 16), private_key, N)
+        self.ui.from_sign.setText(f"{sign:x}")
 
-        if not self.ui.from_line_public.text():
-            if self.ui.main_line_public.text():
-                self.ui.from_line_public.setText(self.ui.main_line_public.text())
-        if self.ui.from_line_public.text():
-            public_key = int(self.ui.from_line_public.text())
-
-        text = self.ui.from_text.toPlainText()
-        encoded = RSA.encrypt(public_key, N, text)
-        self.ui.to_text.setText(encoded)
-
-    def decrypt(self):
-        N, private_key = None, None
+    def verify(self):
+        N, public_key = None, None
+        self.ui.to_hash.clear()
         if not self.ui.to_line_N.text():
             if self.ui.main_line_N.text():
                 self.ui.to_line_N.setText(self.ui.main_line_N.text())
         if self.ui.to_line_N.text():
             N = int(self.ui.to_line_N.text())
-        if not self.ui.to_line_private.text():
+        if not self.ui.to_line_public.text():
             if self.ui.main_line_public.text():
-                self.ui.to_line_private.setText(self.ui.main_line_private.text())
-        if self.ui.to_line_private.text():
-            private_key = int(self.ui.to_line_private.text())
-        text = self.ui.from_text.toPlainText()
-        decoded = RSA.decrypt(private_key, N, text)
-        self.ui.to_text.setText(decoded)
+                self.ui.to_line_public.setText(self.ui.main_line_public.text())
+        if self.ui.to_line_public.text():
+            public_key = int(self.ui.to_line_public.text())
+        text = self.ui.text.toPlainText()
+        decoded_hash = sha(text)
+        from_sign = self.ui.from_sign.text()
+        sign = pow(int(from_sign, 16), public_key, N)
+        self.ui.to_hash.setText(f"{sign:x}")
+        if str(decoded_hash) == f"{sign:x}":
+            QMessageBox.information(self, "Success", "Sign is correct", QMessageBox.Ok)
+        else:
+            QMessageBox.information(self, "Error", "Invalid sign!", QMessageBox.Ok)
 
     def clear(self):
         self.ui.main_line_p.clear()
@@ -109,30 +115,14 @@ class GUI(QMainWindow):
         self.ui.main_line_public.clear()
         self.ui.main_line_private.clear()
         self.ui.from_line_N.clear()
-        self.ui.from_line_public.clear()
+        self.ui.from_line_private.clear()
         self.ui.to_line_N.clear()
-        self.ui.to_line_private.clear()
-        self.ui.from_text.clear()
-        self.ui.to_text.clear()
+        self.ui.to_line_public.clear()
+        self.ui.text.clear()
+        self.ui.from_sign.clear()
+        self.ui.to_hash.clear()
         self.to_data = None
         self.from_data = None
-
-    def save(self):
-        byte = b""
-        file_name = QFileDialog.getSaveFileName(self, "Save File", ".", "All Files (*)")
-        if file_name[0]:
-            with open(file_name[0], "wb") as file:
-                try:
-                    for i in self.ui.to_text.toPlainText().split():
-                        byte += int(i).to_bytes(1, byteorder='little')
-                    file.write(byte)
-                except:
-                    for i in self.ui.to_text.toPlainText().split():
-                        byte += i.encode()
-                    file.write(byte)
-
-        else:
-            QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
 
     def open(self):
         byte = ""
@@ -140,14 +130,30 @@ class GUI(QMainWindow):
         if file_name[0]:
             with open(file_name[0], "rb") as file:
                 self.from_data = file.read()
-                # self.ui.from_text.setText(str(self.from_data)[2:-1])
                 for i in self.from_data:
                     i.to_bytes(1, byteorder='little')
                     byte += f"{i} "
-                self.ui.from_text.setText(byte)
+                self.ui.text.setText(byte)
         else:
             QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
 
+    def save_sign(self):
+        file_name = QFileDialog.getSaveFileName(self, "Save File", ".", "All Files (*)")
+        if file_name[0]:
+            with open(file_name[0], "wb") as file:
+                pickle.dump((self.ui.from_sign.text(), self.ui.text.toPlainText()), file)
+        else:
+            QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
+
+    def load_sign(self):
+        file_name = QFileDialog.getOpenFileName(self, "Open File", ".", "All Files (*)")
+        if file_name[0]:
+            with open(file_name[0], "rb") as file:
+                sign, message = pickle.load(file)
+            self.ui.from_sign.setText(sign)
+            self.ui.text.setText(message)
+        else:
+            QMessageBox.information(self, "Error", "No file name specified", QMessageBox.Ok)
 
 def main():
     app = QApplication()

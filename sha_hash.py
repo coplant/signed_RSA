@@ -1,4 +1,3 @@
-hashes = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
 
 
 def chunk(source, length=512):
@@ -16,6 +15,7 @@ def sha(data):
     Returns the SHA1 as a 40-character hex string\n
     Example: python .\main.py "<data>"
     """
+    hashes = [0x67452301, 0xEFCDAB89, 0x98BADCFE, 0x10325476, 0xC3D2E1F0]
     origin = ""
     encoded = ""
     for n in data:
@@ -54,5 +54,4 @@ def sha(data):
         hashes[4] = (hashes[4] + e) & 0xffffffff
     for hash in hashes:
         encoded += f"{hash:08x}"
-    print(encoded)
     return encoded

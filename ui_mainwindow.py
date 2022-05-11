@@ -33,6 +33,10 @@ class Ui_MainWindow(object):
         self.save.setObjectName(u"save")
         self.generate_key = QAction(MainWindow)
         self.generate_key.setObjectName(u"generate_key")
+        self.sign_load = QAction(MainWindow)
+        self.sign_load.setObjectName(u"sign_load")
+        self.sign_save = QAction(MainWindow)
+        self.sign_save.setObjectName(u"sign_save")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.formLayout_4 = QFormLayout(self.centralwidget)
@@ -145,12 +149,12 @@ class Ui_MainWindow(object):
 
         self.formLayout_2.setWidget(1, QFormLayout.LabelRole, self.from_public)
 
-        self.from_line_public = QLineEdit(self.centralwidget)
-        self.from_line_public.setObjectName(u"from_line_public")
-        self.from_line_public.setReadOnly(False)
-        self.from_line_public.setClearButtonEnabled(False)
+        self.from_line_private = QLineEdit(self.centralwidget)
+        self.from_line_private.setObjectName(u"from_line_private")
+        self.from_line_private.setReadOnly(False)
+        self.from_line_private.setClearButtonEnabled(False)
 
-        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.from_line_public)
+        self.formLayout_2.setWidget(1, QFormLayout.FieldRole, self.from_line_private)
 
         self.label = QLabel(self.centralwidget)
         self.label.setObjectName(u"label")
@@ -159,7 +163,7 @@ class Ui_MainWindow(object):
 
         self.from_sign = QLineEdit(self.centralwidget)
         self.from_sign.setObjectName(u"from_sign")
-        self.from_sign.setReadOnly(True)
+        self.from_sign.setReadOnly(False)
         self.from_sign.setClearButtonEnabled(False)
 
         self.formLayout_2.setWidget(2, QFormLayout.FieldRole, self.from_sign)
@@ -197,23 +201,23 @@ class Ui_MainWindow(object):
 
         self.formLayout_3.setWidget(1, QFormLayout.LabelRole, self.to_private)
 
-        self.to_line_private = QLineEdit(self.centralwidget)
-        self.to_line_private.setObjectName(u"to_line_private")
-        self.to_line_private.setClearButtonEnabled(False)
+        self.to_line_public = QLineEdit(self.centralwidget)
+        self.to_line_public.setObjectName(u"to_line_public")
+        self.to_line_public.setClearButtonEnabled(False)
 
-        self.formLayout_3.setWidget(1, QFormLayout.FieldRole, self.to_line_private)
+        self.formLayout_3.setWidget(1, QFormLayout.FieldRole, self.to_line_public)
 
         self.label_2 = QLabel(self.centralwidget)
         self.label_2.setObjectName(u"label_2")
 
         self.formLayout_3.setWidget(2, QFormLayout.LabelRole, self.label_2)
 
-        self.to_sign = QLineEdit(self.centralwidget)
-        self.to_sign.setObjectName(u"to_sign")
-        self.to_sign.setReadOnly(True)
-        self.to_sign.setClearButtonEnabled(False)
+        self.to_hash = QLineEdit(self.centralwidget)
+        self.to_hash.setObjectName(u"to_hash")
+        self.to_hash.setReadOnly(False)
+        self.to_hash.setClearButtonEnabled(False)
 
-        self.formLayout_3.setWidget(2, QFormLayout.FieldRole, self.to_sign)
+        self.formLayout_3.setWidget(2, QFormLayout.FieldRole, self.to_hash)
 
 
         self.verticalLayout_3.addLayout(self.formLayout_3)
@@ -241,15 +245,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_4 = QVBoxLayout()
         self.verticalLayout_4.setObjectName(u"verticalLayout_4")
-        self.from_text = QTextEdit(self.centralwidget)
-        self.from_text.setObjectName(u"from_text")
+        self.text = QTextEdit(self.centralwidget)
+        self.text.setObjectName(u"text")
 
-        self.verticalLayout_4.addWidget(self.from_text)
-
-        self.to_text = QTextEdit(self.centralwidget)
-        self.to_text.setObjectName(u"to_text")
-
-        self.verticalLayout_4.addWidget(self.to_text)
+        self.verticalLayout_4.addWidget(self.text)
 
 
         self.formLayout_4.setLayout(0, QFormLayout.FieldRole, self.verticalLayout_4)
@@ -260,11 +259,15 @@ class Ui_MainWindow(object):
         self.menubar.setGeometry(QRect(0, 0, 852, 22))
         self.menuFile = QMenu(self.menubar)
         self.menuFile.setObjectName(u"menuFile")
+        self.menuSign = QMenu(self.menubar)
+        self.menuSign.setObjectName(u"menuSign")
         MainWindow.setMenuBar(self.menubar)
 
         self.menubar.addAction(self.menuFile.menuAction())
+        self.menubar.addAction(self.menuSign.menuAction())
         self.menuFile.addAction(self.open)
-        self.menuFile.addAction(self.save)
+        self.menuSign.addAction(self.sign_load)
+        self.menuSign.addAction(self.sign_save)
 
         self.retranslateUi(MainWindow)
 
@@ -272,7 +275,7 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"lab_13: Signed RSA", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"lab_13: RSA Digital Signature", None))
         self.open.setText(QCoreApplication.translate("MainWindow", u"Open", None))
 #if QT_CONFIG(tooltip)
         self.open.setToolTip(QCoreApplication.translate("MainWindow", u"Open input file", None))
@@ -294,6 +297,8 @@ class Ui_MainWindow(object):
 #if QT_CONFIG(shortcut)
         self.generate_key.setShortcut(QCoreApplication.translate("MainWindow", u"Ctrl+G", None))
 #endif // QT_CONFIG(shortcut)
+        self.sign_load.setText(QCoreApplication.translate("MainWindow", u"Load", None))
+        self.sign_save.setText(QCoreApplication.translate("MainWindow", u"Save", None))
         self.main_prime_p.setText(QCoreApplication.translate("MainWindow", u"Prime P:", None))
         self.main_line_p.setInputMask("")
         self.main_prime_q.setText(QCoreApplication.translate("MainWindow", u"Prime Q: ", None))
@@ -307,13 +312,14 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(shortcut)
         self.btn_clear.setText(QCoreApplication.translate("MainWindow", u"Clear", None))
         self.from_N.setText(QCoreApplication.translate("MainWindow", u"RSA mod N: ", None))
-        self.from_public.setText(QCoreApplication.translate("MainWindow", u"Public Key (E): ", None))
+        self.from_public.setText(QCoreApplication.translate("MainWindow", u"Private Key (D): ", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Sign:", None))
-        self.btn_encrypt.setText(QCoreApplication.translate("MainWindow", u"Encrypt", None))
+        self.btn_encrypt.setText(QCoreApplication.translate("MainWindow", u"Sign", None))
         self.to_N.setText(QCoreApplication.translate("MainWindow", u"RSA mod N: ", None))
-        self.to_private.setText(QCoreApplication.translate("MainWindow", u"Private Key (D): ", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Sign:", None))
-        self.btn_decrypt.setText(QCoreApplication.translate("MainWindow", u"Decrypt", None))
+        self.to_private.setText(QCoreApplication.translate("MainWindow", u"Public Key (E): ", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Hash:", None))
+        self.btn_decrypt.setText(QCoreApplication.translate("MainWindow", u"Verify", None))
         self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
+        self.menuSign.setTitle(QCoreApplication.translate("MainWindow", u"Sign", None))
     # retranslateUi
 
